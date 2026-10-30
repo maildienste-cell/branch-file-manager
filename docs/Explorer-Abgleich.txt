@@ -1,0 +1,73 @@
+Branch 3.1 – Abgleich mit Windows-Datei-Explorer
+Stand: 30. Oktober 2026
+
+ERGEBNIS
+Die grundlegenden Dateiaktionen und die Anordnung der Befehle orientieren sich
+am Windows-11-Explorer. Vollständige Funktions- oder Pixelgleichheit besteht nicht.
+Die Farbtöne sind eine Annäherung an das neutrale helle/dunkle Windows-Design;
+Windows-Akzentfarben, Themes, Updates und Insider-Versionen können abweichen.
+Die macOS-Fensterknöpfe, Systemschrift, Dialoge und obere System-Menüleiste
+bleiben native Mac-Elemente. Die zusätzlichen Datei/Ansicht-Menüs in dieser
+Systemleiste sind eine Mac-Ergänzung, keine Kopie einer Windows-Menüleiste.
+Die Microsoft-Meldung vom August bezeichnet die neuen Kontextmenüs als Insider-
+Rollout. Sie wird nicht als Nachweis identischer Menüs auf jedem Windows-PC gewertet.
+
+VORHANDEN UND GEPRÜFT
+• Befehlsleiste: Neu, Ausschneiden, Kopieren, Einfügen, Umbenennen, Teilen,
+  Papierkorb, Sortieren, Ansicht, weitere Optionen.
+• Neu: Ordner oder leeres Textdokument. Keine Dateivorlagen installierter Apps.
+• Weitere Optionen: Alles auswählen, Auswahl umkehren, Pfad kopieren,
+  Aktualisieren, Eigenschaften der ersten ausgewählten Datei.
+• Sortieren: Name, Änderungsdatum, Typ, Größe; explizit auf-/absteigend.
+• Ansichten: Details, einspaltige Liste, kompakte Details.
+• Tabs, Schnellzugriff, Verzeichnisbaum, anklickbarer Pfad, Zurück/Vorwärts.
+• Ausschneiden/Einfügen, Konfliktentscheidung für laufenden Auftrag merken,
+  Papierkorb und Rückgängigmachen von Kopier-/Verschiebeaufträgen.
+• Windows-nahe Tastenkürzel einschließlich Strg+C/X/V/A/L/F/T/W/Z, F2, F5,
+  Alt+Pfeile und Strg+Umschalt+N. Mac-Befehlstasten bleiben zusätzlich nutzbar.
+• Kontextmenüs mit Dateiaktionen; nicht verfügbare Einträge werden teilweise
+  nach Auswahl bzw. laufender Übertragung deaktiviert.
+
+GEFUNDEN UND IN 3.1 KORRIGIERT
+• Doppelte Ausschneiden-Aktion in der System-Menüleiste entfernt.
+• Teilen in der Befehlsleiste ergänzt.
+• Neu-Dropdown, Drei-Punkte-Menü und explizite Sortierrichtungen ergänzt.
+• Datei-Aktionen und Darstellungsarten zusätzlich in der Mac-Menüleiste ergänzt.
+• Blau getönte Flächen, Verläufe und Zeilenstreifen durch neutrale Flächen ersetzt.
+• Befehls-Icons und Bereichstitel neutral gefärbt; Ordner gelb, Auswahl blau.
+• Strg+Z sowie Strg/Umschalt beim Ziehen ergänzt.
+
+WICHTIGE ABWEICHUNGEN / NICHT VORHANDEN
+• Ordnerkonflikte: „Ersetzen“ ersetzt den gesamten Zielordner, statt die Inhalte
+  zusammenzuführen. Das bisherige Ziel wird in den Papierkorb gelegt.
+• Ziehen ohne Zusatztaste verschiebt innerhalb von Branch auch über Laufwerke
+  hinweg. Strg oder Option beim Ziehen kopiert; Umschalt erzwingt Verschieben.
+• Kein Symbolraster mit Miniaturen, keine Galerie-/Kachel-/Inhaltsansicht,
+  keine Gruppierung und keine frei konfigurierbaren Metadatenspalten.
+• Vorschau ist ein separates Quick-Look-Fenster, kein angedockter Bereich.
+  Eigenschaften sind ein kurzer Dialog, kein vollständiger Windows-Detailsbereich.
+• Suche: lokaler Namensfilter, mit Enter begrenzte rekursive Dateinamensuche;
+  kein Windows-Index, keine allgemeine Inhalts-/Cloudsuche, keine Windows-Suchsyntax.
+• Kein integriertes ZIP-Erstellen/Entpacken, keine Windows-Verknüpfungsverwaltung,
+  kein Netzlaufwerk-Verbinden-Dialog oder Windows-Shell-Erweiterungen.
+• Kein Windows-Dateirechte-/Sicherheitsdialog, keine Laufwerksbuchstaben,
+  kein Löschen unter Umgehung des Papierkorbs, kein vollständiges Undo/Redo
+  für Umbenennen und Löschen, keine Windows-Startseite mit zuletzt verwendeten Dateien.
+• Teilen verwendet macOS-Freigabedienste. Keine Windows-Konto-/OneDrive-Integration.
+• Botti, doppelte Dateiansicht, Arbeitsbereiche und Alle auswerfen sind Branch-Extras.
+
+VALIDIERUNG
+Neubau und automatische Dateioperationstests erfolgreich, einschließlich Kopieren,
+Verschieben, Konflikten, Rückgängig, Wiederherstellung bei simulierten Fehlern,
+Papierkorb, Byte-/Dateizähler, Suchfiltern und Ausschneiden-Zustand.
+UI-Tests in hellem und dunklem Modus erfolgreich: Menüstruktur ohne doppeltes
+Ausschneiden, Sortierrichtungen, Auswahl umkehren, Ansichten, Navigation, Tabs,
+Arbeitsbereiche und Vorschau. Beide Farbvarianten visuell geprüft.
+Nicht als End-to-End geprüft: Versand über Teilen, Auswerfen realer Laufwerke,
+alle Tastaturen/Netzlaufwerke und jede einzelne mögliche Dialogkombination.
+
+REFERENZEN
+Microsoft Support – Explorer in Windows (Windows-11-Abschnitt):
+https://support.microsoft.com/de-de/windows/experience/fileexplorer/file-explorer-in-windows
+Microsoft Windows Insider Blog – Verbesserungen und Kontextmenü, 17.08.2026:
+https://blogs.windows.com/windows-insider/2026/08/17/improving-file-explorer-context-menu-faster-simpler-and-more-customizable/

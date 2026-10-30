@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDisplayName</key>
+	<string>Branch</string>
+	<key>CFBundleExecutable</key>
+	<string>Branch</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
+	<key>CFBundleIdentifier</key>
+	<string>io.github.maildienste-cell.branch</string>
+	<key>CFBundleName</key>
+	<string>Branch</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>3.1</string>
+	<key>CFBundleVersion</key>
+	<string>13</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>14.0</string>
+	<key>NSDesktopFolderUsageDescription</key>
+	<string>Branch zeigt und verwaltet Dateien auf deinem Schreibtisch.</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>Branch zeigt und verwaltet die von dir gewählten Dokumente.</string>
+	<key>NSDownloadsFolderUsageDescription</key>
+	<string>Branch zeigt und verwaltet deine Downloads.</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+</dict>
+</plist>

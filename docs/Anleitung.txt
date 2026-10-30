@@ -1,0 +1,237 @@
+Branch – Version 3.1
+Dateiverwaltung für deinen Mac mit Apple-Chip, ab macOS 14.
+
+EXPLORER-DESIGN UND BEDIENUNG
+Branch orientiert sich jetzt an der Windows-11-Explorer-Bedienung: neutrale
+weiße/graue bzw. anthrazitfarbene Flächen ohne Farbverlauf oder Zeilenstreifen,
+blaue Auswahl, gelbe Ordner, Tabs, Schnellzugriff und eine
+Befehlsleiste mit Neu, Ausschneiden, Kopieren, Einfügen, Umbenennen, Papierkorb,
+Sortieren, Ansicht und weitere Optionen (…). Beim ersten Start dieser Version wird eine Dateiansicht
+aktiviert; die zweite Ansicht bleibt zuschaltbar. Der Dateibereich ist größer,
+Botti und seine Fortschrittsblase belegen nur noch einen kompakten Fußbereich.
+
+Der Ordnerpfad ist anklickbar. Strg+L oder ⌘L öffnet das Pfad-Eingabefeld.
+Die Spalten Name, Änderungsdatum, Typ und Größe sind per Klick sortierbar;
+erneuter Klick kehrt die Richtung um. Ordner bleiben vor Dateien.
+„Ansicht“ bietet Details, Liste und kompakte Details. Die Auswahl wird pro Seite
+beim Neustart beibehalten. Über Rechtsklick gibt es auch Teilen und Eigenschaften
+(für die erste ausgewählte Datei).
+
+WINDOWS-TASTENKÜRZEL IN DER DATEILISTE
+• Strg+C/X/V: Kopieren / Ausschneiden / Einfügen (auch ⌘C/X/V).
+• Strg+A: Alles auswählen. Strg+Klick: einzelne Elemente zur Auswahl hinzufügen.
+• F2: Umbenennen. F5: Aktualisieren. Entf: Papierkorb mit Bestätigung.
+• Alt+Links/Rechts: Zurück/Vorwärts. Alt+Oben: übergeordneter Ordner.
+• Strg+L: Adresse bearbeiten. Strg+F: Suchfeld fokussieren.
+• Strg+T/W: Tab öffnen/schließen. Strg+Umschalt+N: neuer Ordner.
+Bei Mac-Tastaturen können F2/F5 zusätzlich die Fn-Taste benötigen.
+Ausschneiden verschiebt erst beim Einfügen; es löscht beim Ausschneiden nichts.
+Die Markierung gilt für Branch und wird beim Einfügen verbraucht. Bei abgebrochenen
+oder teilweise fehlgeschlagenen Aufträgen verbleibende Quellen erneut ausschneiden.
+Leertaste sowie Pfeil-Auf/Ab für die fortlaufende Vorschau bleiben verfügbar.
+
+SUCHE
+Tippen filtert Dateinamen im aktuellen Ordner. Enter durchsucht zusätzlich
+Unterordner nach Dateinamen; es werden keine Dokumentinhalte durchsucht.
+Diese rekursive Dateisuche zeigt höchstens 200 Treffer und arbeitet höchstens
+12 Sekunden bzw. 100.000 Einträge. Versteckte Dateien, Paket-Inhalte und
+Verknüpfungsziele werden ausgelassen; begrenzte Ergebnisse sind gekennzeichnet.
+Die lokale KI-Suche über Botti bleibt separat verfügbar.
+
+Branch ist eine native Mac-Dateiverwaltung mit Explorer-orientierter Bedienung,
+keine vollständige Windows-Shell: Windows-Laufwerksbuchstaben, Explorer-Erweiterungen,
+Windows-Programme und Symbolraster mit Miniaturansichten werden nicht nachgebildet.
+
+FENSTER-LAYOUT
+Im Menü „Layout“ oben rechts stehen linke/rechte/obere/untere Bildschirmhälfte
+und „Ganzer Bildschirm“ zur Verfügung. Gemeint ist der nutzbare Bereich des
+aktuellen Monitors, mit Platz für Menüleiste und Dock (kein eigener Vollbild-Space).
+In schmalen Hälften schaltet Branch auf eine Dateiansicht. Über „Zweite Ansicht“
+kannst du später wieder beide Seiten öffnen. In niedrigen Fenstern wird Botti
+kompakt dargestellt, bei Aktionen bleibt seine Gesamtanzeige sichtbar.
+
+ALLE LAUFWERKE AUSWERFEN
+Der große Knopf „Alle auswerfen“ mit Auswerfen-Symbol oben rechts wirft alle
+zum Klickzeitpunkt angeschlossenen externen lokalen Laufwerke unter /Volumes aus.
+Auch auswerfbare Disk-Images sind eingeschlossen. Interne Platten/Systemplatte
+und Netzwerkfreigaben werden ausgeschlossen. Während einer laufenden Dateiaktion
+kannst du das Auswerfen nicht starten. Branch schließt zuvor seine Dateivorschau.
+Es wird nichts erzwungen: Verhindert macOS das Auswerfen etwa wegen einer anderen
+App, nennt Branch die betroffenen Laufwerke und den Fehler. Andere auswerfbare
+Laufwerke werden trotzdem bearbeitet. Die Auswahllogik und Layouts sind getestet;
+echte angeschlossene Laufwerke wurden bei der Entwicklung nicht ausgeworfen.
+
+STARTEN
+Zum Installieren Branch.app aus dem Release-Download in den Programme-Ordner
+ziehen. Dock- und Stream-Deck-Verknüpfungen können selbst hinzugefügt werden.
+Die App ist lokal signiert, nicht für den App Store notarisiert.
+
+BOTTI – DEIN DATEI-ASSISTENT
+Unten rechts lebt Botti als eine einzige flache 2D-Figur: frontal, mit hellem
+Gehäuse, orangefarbenen Entenfüßen, zwei freundlichen Augen und einem lächelnden
+kleinen Schnabel. Im Leerlauf bleibt er an seinem Platz und blinzelt gelegentlich.
+Seine Bewegungen passen zur Aufgabe: kleine Flügelbewegungen beim Übertragen,
+Kopfneigen beim Nachdenken und ein kurzes freudiges Hüpfen nach dem Abschluss.
+Es gibt kein zufälliges Herumlaufen und keine Purzelbäume mehr.
+Im Leerlauf ist die Gedankenblase unsichtbar. Sie erscheint beim Arbeiten,
+Denken und kurz zur Bestätigung einer abgeschlossenen Aufgabe.
+Die Systemeinstellung
+„Bewegung reduzieren“ wird berücksichtigt. Beim Kopieren zeigt seine Gedankenblase
+die gemessene Datenrate. Beim Verschieben innerhalb desselben Laufwerks erscheint
+„Intern verschieben“, weil dabei meist keine Dateiinhalte kopiert werden.
+
+Klicke auf Botti oder drücke ⌘J, um den Datei-Chat zu öffnen.
+Beispiele: „Zeige meine größten PDFs“, „Wie viele Bilder liegen hier?“ oder
+„Finde PDF-Dateien mit Rechnung im Namen“.
+Wähle oben den aktuellen Ordner, den Benutzerordner oder einen eigenen Suchordner.
+Die Suche berücksichtigt Unterordner und filtert Namen, Typ, Änderungsdatum und
+Größe. Treffer lassen sich in Branch anzeigen oder per Vorschau öffnen.
+Die lokale Apple-KI benötigt macOS 26 und ein verfügbares Apple-Intelligence-Modell.
+Ohne verfügbare KI bleibt eine einfache lokale Stichwortsuche nutzbar.
+Dateien werden nicht an einen KI-Server hochgeladen; der Chat wird nicht gespeichert.
+
+Für Inhaltsfragen zuerst eine Datei markieren und „Auswahl zusammenfassen“ wählen.
+Unterstützt sind PDFs mit Text sowie einfache Textdateien (z. B. TXT, Markdown,
+CSV oder JSON), bis 25 MB. Verarbeitet wird nur ein Auszug: höchstens die ersten
+8 PDF-Seiten bzw. 8.000 Zeichen. Word-Dateien und Bildscans werden nicht ausgelesen.
+Die KI kann sich irren; die jeweilige Quelldatei wird in der Antwort angegeben.
+Die Dateisuche liest nur Metadaten, keine gesamten Dokumentinhalte.
+
+Pro Suche gelten maximal 100.000 untersuchte Einträge bzw. 12 Sekunden; angezeigt
+werden bis zu 200 Treffer. Unvollständige Ergebnisse und Zugriffsfehler werden
+gekennzeichnet. Versteckte Dateien, Verknüpfungsziele und Paket-Inhalte werden
+ausgelassen. Der Chat verändert keine Dateien.
+
+TABS
+Jede Seite hat ihre eigenen Tabs. Mit + oder ⌘T öffnest du einen neuen Tab
+im aktuellen Ordner. Ein Klick auf den Tab wechselt dorthin. Mit × oder ⌘W
+schließt du den aktuellen Tab; der letzte Tab einer Seite bleibt offen.
+Bei vielen Tabs kannst du die Tab-Leiste horizontal scrollen.
+Tabs, aktive Ordner und Navigationsverlauf werden automatisch gespeichert.
+
+ARBEITSBEREICHE
+Oben „Arbeitsbereiche“ → „Aktuellen Arbeitsbereich speichern …“ wählen.
+Ein Arbeitsbereich merkt sich alle Tabs beider Seiten, den jeweils aktiven
+Tab und die Ein-/Zwei-Ansichten-Einstellung. Zum Wiederherstellen einfach
+seinen Namen im selben Menü wählen. Speichern unter demselben Namen bietet
+eine Aktualisierung an. „Arbeitsbereich entfernen“ löscht nur diese Ansicht.
+Nicht erreichbare aktive Ordner werden durch den Benutzerordner ersetzt.
+
+VORSCHAU
+Eine Datei in der Dateiliste markieren und die Leertaste drücken.
+Die macOS-Schnellvorschau zeigt unterstützte Bilder, PDFs, Texte und weitere
+Formate an. Leertaste oder Escape schließt das Vorschaufenster wieder.
+Mit Pfeil nach oben/unten wechselst du zur vorherigen/nächsten Datei in der
+Liste; die geöffnete Vorschau zeigt automatisch die neue Auswahl. Das funktioniert
+auch, wenn du zuvor in die Vorschau geklickt hast. Am Listenanfang/-ende bleibt
+die Auswahl stehen. Auch über Rechtsklick → „Vorschau“ erreichbar. Bei mehreren markierten
+Dateien wird die erste angezeigt. Nicht jeder Dateityp hat eine Vorschau.
+
+VERZEICHNISBAUM UND FAVORITEN
+Mit den kleinen Pfeilen Unterordner aufklappen; mit einem Klick auf einen
+Ordner seinen Inhalt anzeigen. Per Doppelklick Ordner oder Dateien öffnen.
+Ein Klick auf den farbigen Stern oben fügt den aktuellen Ordner als Favorit
+hinzu; ein weiterer entfernt ihn. Favoriten gelten für beide Seiten.
+Im Pfadfeld kannst du einen Ordnerpfad eingeben, auch mit ~ am Anfang.
+
+ZWEI ANSICHTEN
+Oben rechts oder mit ⌘2 wechselst du zwischen einer und zwei Ansichten.
+Jede Seite hat ihren eigenen Baum und ihre eigenen Tabs. Die mittlere
+Trennlinie sowie die Grenze zwischen Baum und Liste sind verschiebbar.
+
+KOPIEREN UND VERSCHIEBEN
+Innerhalb von Branch: Dateien auf einen Zielordner oder auf die freie
+Fläche der anderen Dateiliste ziehen, um sie zu verschieben.
+⌥ beim Ziehen gedrückt halten, um zu kopieren.
+Aus anderen Apps wird kopiert, wenn die Quelle nur Kopieren unterstützt.
+Alternativ: Strg/⌘C und am Ziel Strg/⌘V zum Kopieren; Strg/⌘X und
+Strg/⌘V zum Verschieben. ⌥⌘V zum Verschieben bleibt ebenfalls möglich.
+
+FORTSCHRITT UND STOPPEN
+Bottis wolkenförmige Gedankenblase zeigt eine einzige Gesamtübersicht:
+• Ein kleiner Kreis füllt sich nach dem Anteil der übertragenen Datenmenge.
+• Der Zähler steigt z. B. von „0 von 30 Dateien“ auf „30 von 30 Dateien“.
+• Darunter stehen gemessene Geschwindigkeit, übertragene/Gesamt-Datenmenge
+  und die geschätzte Restzeit. Nach Abschluss bleibt kurz der volle Kreis stehen.
+Dateien in Unterordnern, leere Dateien und symbolische Links zählen mit;
+Ordner selbst werden nicht als Dateien gezählt. Links werden nicht verfolgt.
+Vor dem Start werden Anzahl und Größe ermittelt. Während der Übertragung extern
+veränderte Quellen können die Schätzung beeinflussen. Übersprungene Dateien
+werden aus der noch zu übertragenden Gesamtmenge entfernt.
+Die Restzeit basiert auf geglätteter Geschwindigkeit und wird nach einer kurzen
+Messphase angezeigt. Sie kann schwanken. Bei Wartezeiten oder Rückfragen gibt
+es keine irreführende laufende Zeitprognose. Innerhalb desselben Laufwerks wird
+beim Verschieben keine Kopiergeschwindigkeit oder Kopier-Restzeit angegeben.
+„Stoppen“ stoppt nach dem aktuellen Objekt. Ein Ordner mit Inhalt zählt hierbei
+als ein Objekt. Fertige Übertragungen bleiben bestehen und können rückgängig
+gemacht werden. Es läuft jeweils eine Übertragung. Währenddessen sind weitere
+Dateiveränderungen in Branch gesperrt.
+
+GLEICHE NAMEN
+Bei Namenskonflikten stehen diese Optionen zur Verfügung:
+• Beide behalten: neue Datei etwa „Bericht (2).pdf“.
+• Überspringen: dieses Objekt auslassen und mit dem nächsten fortfahren.
+• Ersetzen: bisheriges Ziel in den Papierkorb legen und neues Objekt einsetzen.
+• Abbrechen: keine weiteren Objekte übertragen.
+Mit „Für weitere Konflikte dieser Übertragung merken“ wird deine Auswahl
+(Beide behalten, Überspringen oder Ersetzen) für die folgenden Namenskonflikte
+dieses Auftrags übernommen. Beim nächsten Kopier-/Verschiebeauftrag wird wieder
+gefragt. Ohne Häkchen gilt die Auswahl nur für den aktuellen Konflikt.
+„Abbrechen“ wird nicht gespeichert. Würde eine gemerkte Ersetzen-Auswahl eine
+Datei durch sich selbst ersetzen, fragt Branch erneut mit gesperrtem Ersetzen.
+Wichtig: Ein Ordner wird beim Ersetzen vollständig ersetzt, nicht mit dem
+vorhandenen Ordner zusammengeführt. „Ersetzen“ ist für dieselbe Quelldatei
+und Zieldatei gesperrt. Wird das Ziel während der Übertragung verändert,
+wird der Vorgang abgebrochen, statt das unerwartet geänderte Ziel zu ersetzen.
+
+RÜCKGÄNGIG
+Unten „Übertragung rückgängig“ oder bei aktiver Dateiliste ⌘Z drücken.
+Nach Bestätigung kehren verschobene Objekte an ihren ursprünglichen Ort
+zurück. Kopierte Objekte werden in den Papierkorb gelegt. Ersetzte Originale
+werden aus dem Papierkorb wiederhergestellt. Auch spätere Änderungen an
+einer Kopie bleiben damit im Papierkorb erhalten.
+Wenn am ursprünglichen Ort inzwischen eine Datei liegt oder ein benötigtes
+Objekt fehlt, wird die Wiederherstellung mit einer Erklärung angehalten.
+Mehrere Übertragungen lassen sich nacheinander rückgängig machen.
+Der Rückgängig-Verlauf gilt nur für die laufende Sitzung und nur für Kopieren
+und Verschieben. Beim Beenden endet er. Ersetzte Originale bleiben danach
+im Papierkorb, bis du diesen leerst. Kein Wiederholen/Redo in dieser Version.
+
+WEITERE FUNKTIONEN
+• Neuer Ordner: Schaltfläche mit Ordner und Plus.
+• Umbenennen: Rechtsklick auf genau eine Datei oder einen Ordner.
+• Papierkorb: Rechtsklick oder ⌘Rücktaste, mit Bestätigungsdialog.
+• Suche: Tippen filtert den Ordner; Enter durchsucht auch Unterordner nach Dateinamen.
+• Versteckte Dateien: Menü „Ansicht“ oder ⌘Punkt.
+• Aktualisieren: Kreis-Pfeil; auch beim erneuten Aktivieren der App.
+• Zurück / eine Ebene höher: Pfeile neben dem Pfadfeld.
+
+ZUGRIFF UND PRÜFUNG
+Es gelten deine normalen macOS-Zugriffsrechte. Die App lädt keine Dateien
+zu einem Server hoch. macOS kann nach einer Ordnerfreigabe fragen.
+Geprüft: Kopieren/Verschieben, Beide behalten, Überspringen, Ersetzen,
+Rückgängig, Namenskonflikte beim Rückgängigmachen, Schutz vor Übertragung
+in eigene Unterordner, Wiederherstellung nach simuliertem Fehler, echter
+macOS-Papierkorb, Tabs, Arbeitsbereiche, Fortschrittsanzeige und Schnellvorschau.
+Zusätzlich geprüft: gemessene Kopierbytes bei verschachtelten Ordnern, Erhalt
+von symbolischen Links, lokale Suchfilter, Textauszüge, lokale KI und Botti-Zustände.
+Netzlaufwerke, laufwerkübergreifende Transfers und Cloud-Platzhalter sind nicht
+gesondert getestet.
+
+QUELLCODE
+Source enthält den Quellcode und die Tests. Source/build.command baut die
+mitgelieferte App mit Apples Xcode-Entwicklungswerkzeugen neu.
+
+ERGÄNZUNGEN IN VERSION 3.1
+„Neu“ bietet Ordner und leere Textdokumente an; vorhandene Namen werden nicht
+überschrieben. Teilen steht auch direkt in der Befehlsleiste. „…“ enthält Alles
+auswählen, Auswahl umkehren, Pfad kopieren, Aktualisieren und Eigenschaften.
+Sortieren hat explizite Einträge für Aufsteigend/Absteigend und markiert die
+aktuelle Einstellung; Ansicht markiert ebenfalls die gewählte Darstellung.
+Die ergänzende macOS-Menüleiste enthält Datei-Aktionen und die drei Ansichten.
+Der doppelte Ausschneiden-Eintrag ist entfernt. Strg+Z ruft das Rückgängigmachen
+von Übertragungen auf; Strg beim Ziehen kopiert, Umschalt erzwingt Verschieben,
+sofern die Quell-App dies zulässt. Ohne Zusatztaste bleibt Branchs bisheriges
+Verschieben-Verhalten bestehen, auch zwischen Laufwerken.
+Der genaue Funktionsabgleich und verbleibende Unterschiede stehen in
+Explorer-Abgleich.txt. Die App ist keine vollständige Windows-Nachbildung.
