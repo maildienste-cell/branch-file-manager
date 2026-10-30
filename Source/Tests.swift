@@ -1,6 +1,12 @@
 import AppKit
 
 func selfTest() throws {
+    let fixed = BrowserPane.fixedQuickAccess.map { $0.url.path }
+    let custom = fm.homeDirectoryForCurrentUser.appendingPathComponent("CustomFavorite").path
+    precondition(BrowserPane.mergedFavorites([]) == fixed)
+    precondition(BrowserPane.mergedFavorites([fixed[1],custom,custom]) == fixed + [custom])
+    precondition(BrowserPane.fixedQuickAccess.map(\.name) == ["Schreibtisch","Downloads","Dokumente","Papierkorb"])
+
     let screen = NSRect(x:-1440,y:30,width:1440,height:900)
     precondition(WindowPlacement.left.frame(in:screen) == NSRect(x:-1440,y:30,width:720,height:900))
     precondition(WindowPlacement.right.frame(in:screen).maxX == screen.maxX)
@@ -104,6 +110,12 @@ func testUIFeatures(_ app: AppDelegate) throws {
     let editMenu = NSApp.mainMenu?.items.compactMap(\.submenu).first { $0.title == "Bearbeiten" }
     precondition(editMenu?.items.filter { $0.title == "Ausschneiden" }.count == 1)
     precondition(NSApp.mainMenu?.items.compactMap(\.submenu).contains { $0.title == "Datei" } == true)
+    let storedFavorites = app.left.favorites
+    app.left.favorites = []
+    precondition(app.left.roots.first?.children().map(\.title) == ["Schreibtisch","Downloads","Dokumente","Papierkorb"])
+    let trashNode = app.left.roots[0].children()[3]
+    precondition(!app.left.outlineView(app.left.outline,isItemExpandable:trashNode))
+    app.left.favorites = storedFavorites
     let originalFrame = app.window.frame
     if let screen = app.window.screen {
         for placement in WindowPlacement.allCases {
@@ -122,6 +134,25 @@ func testUIFeatures(_ app: AppDelegate) throws {
     try fm.createDirectory(at: root, withIntermediateDirectories: true); defer { try? fm.removeItem(at: root) }
     let first = root.appendingPathComponent("Links"), second = root.appendingPathComponent("Rechts")
     try fm.createDirectory(at: first, withIntermediateDirectories: false); try fm.createDirectory(at: second, withIntermediateDirectories: false)
+    let sortFixtures = root.appendingPathComponent("Sortierung")
+    try fm.createDirectory(at:sortFixtures,withIntermediateDirectories:false)
+    let older = sortFixtures.appendingPathComponent("Zuerst.txt"), newer = sortFixtures.appendingPathComponent("Danach.pdf"), third = sortFixtures.appendingPathComponent("NochEine.TXT")
+    for (url,date) in [(older,1600000000.0),(newer,1700000000.0),(third,1650000000.0)] {
+        try Data("Sortiertest".utf8).write(to:url)
+        try fm.setAttributes([.creationDate:Date(timeIntervalSince1970:date)],ofItemAtPath:url.path)
+    }
+    let createdItem = NSMenuItem(); createdItem.tag = BrowserPane.explorerSortFields.firstIndex { $0.key == "created" }!
+    app.right.chooseSort(createdItem)
+    precondition(app.right.table.sortDescriptors.first?.key == "created")
+    precondition(app.right.sortExplorerFiles([third,older,newer]) == [newer,third,older])
+    app.right.chooseSort(createdItem)
+    precondition(app.right.sortExplorerFiles([third,older,newer]) == [older,third,newer])
+    let typeItem = NSMenuItem(); typeItem.tag = BrowserPane.explorerSortFields.firstIndex { $0.key == "type" }!
+    app.right.chooseSort(typeItem)
+    let byType = app.right.sortExplorerFiles([third,older,newer]); precondition(byType.first == newer && byType.dropFirst().allSatisfy { $0.pathExtension.lowercased() == "txt" })
+    app.right.chooseSort(typeItem); precondition(app.right.sortExplorerFiles([third,older,newer]).last == newer)
+    precondition(app.right.table.tableColumns.contains { $0.identifier.rawValue == "created" && $0.sortDescriptorPrototype?.key == "created" })
+    app.right.table.sortDescriptors = [NSSortDescriptor(key:"name",ascending:true)]
     let file = first.appendingPathComponent("Vorschau.txt"); try Data("Branch Vorschau\nTextdatei erfolgreich geöffnet.".utf8).write(to: file)
     let nextFile = first.appendingPathComponent("Zweite.txt"); try Data("Zweite Vorschau".utf8).write(to:nextFile)
     app.left.restore(PaneSession(tabs: [BrowserTab(path: first.path)], selected: 0)); let count = app.left.tabs.count

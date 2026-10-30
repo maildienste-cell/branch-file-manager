@@ -20,11 +20,14 @@ ZIP entpacken und **Branch.app** in den Programme-Ordner ziehen.
 ## Funktionen
 
 - Verzeichnisbaum, Schnellzugriff/Favoriten, Tabs und gespeicherte Arbeitsbereiche.
+- Schreibtisch, Downloads, Dokumente und Papierkorb immer im Schnellzugriff; eigene Favoriten bleiben erhalten.
+  Der Papierkorb-Eintrag öffnet den macOS-Papierkorb im Finder.
 - Zwei Dateiansichten zum Kopieren und Verschieben per Drag-and-drop.
 - Ausschneiden/Kopieren/Einfügen, Konfliktentscheidungen für den Auftrag merken, Papierkorb.
 - Rückgängigmachen von Kopier-/Verschiebeaufträgen während der laufenden Sitzung.
 - Windows-nahe Tastenkürzel: Strg+C/X/V, F2, F5, Alt+Pfeile; zusätzlich Mac-Befehlstasten.
-- Sortierbare Details, Liste und kompakte Ansicht; Dateinamensuche in Unterordnern.
+- Sortierung nach Name, Änderungsdatum, Erstellungsdatum, Dateityp und Größe, jeweils auf- und absteigend.
+- Details, Liste und kompakte Ansicht; Dateinamensuche in Unterordnern.
 - Vorschau mit Leertaste, automatische Aktualisierung beim Wechsel per Pfeiltaste.
 - Fensterpositionen für Bildschirmhälften und den nutzbaren ganzen Bildschirm.
 - Sicheres Auswerfen externer lokaler Laufwerke über macOS, ohne erzwungenes Trennen.
@@ -47,7 +50,7 @@ KI-Antworten können falsch sein. Netzwerkvolumes und Cloud-Platzhalter wurden n
 Die App sendet selbst keine Dateien an einen KI-Server und speichert den Chat nicht dauerhaft.
 Ein vom Benutzer aufgerufener macOS-Freigabedienst oder Cloud-Dateianbieter kann eigene Netzwerkzugriffe ausführen.
 
-Details: [Anleitung](docs/Anleitung.txt) · [Explorer-Funktionsabgleich](docs/Explorer-Abgleich.txt)
+Details: [Anleitung](docs/Anleitung.txt) · [Explorer-Funktionsabgleich (Stand 3.1)](docs/Explorer-Abgleich.txt)
 
 ## Aus dem Quellcode bauen
 

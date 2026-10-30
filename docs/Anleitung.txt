@@ -1,4 +1,4 @@
-Branch – Version 3.1
+Branch – Version 3.3
 Dateiverwaltung für deinen Mac mit Apple-Chip, ab macOS 14.
 
 EXPLORER-DESIGN UND BEDIENUNG
@@ -11,7 +11,7 @@ aktiviert; die zweite Ansicht bleibt zuschaltbar. Der Dateibereich ist größer,
 Botti und seine Fortschrittsblase belegen nur noch einen kompakten Fußbereich.
 
 Der Ordnerpfad ist anklickbar. Strg+L oder ⌘L öffnet das Pfad-Eingabefeld.
-Die Spalten Name, Änderungsdatum, Typ und Größe sind per Klick sortierbar;
+Die Spalten Name, Änderungsdatum, Erstellungsdatum, Dateityp und Größe sind per Klick sortierbar;
 erneuter Klick kehrt die Richtung um. Ordner bleiben vor Dateien.
 „Ansicht“ bietet Details, Liste und kompakte Details. Die Auswahl wird pro Seite
 beim Neustart beibehalten. Über Rechtsklick gibt es auch Teilen und Eigenschaften
@@ -219,8 +219,8 @@ Netzlaufwerke, laufwerkübergreifende Transfers und Cloud-Platzhalter sind nicht
 gesondert getestet.
 
 QUELLCODE
-Source enthält den Quellcode und die Tests. Source/build.command baut die
-mitgelieferte App mit Apples Xcode-Entwicklungswerkzeugen neu.
+Source enthält den Quellcode und die Tests. build.command im Projektordner baut
+die App mit Apples Xcode-Entwicklungswerkzeugen neu.
 
 ERGÄNZUNGEN IN VERSION 3.1
 „Neu“ bietet Ordner und leere Textdokumente an; vorhandene Namen werden nicht
@@ -235,3 +235,21 @@ sofern die Quell-App dies zulässt. Ohne Zusatztaste bleibt Branchs bisheriges
 Verschieben-Verhalten bestehen, auch zwischen Laufwerken.
 Der genaue Funktionsabgleich und verbleibende Unterschiede stehen in
 Explorer-Abgleich.txt. Die App ist keine vollständige Windows-Nachbildung.
+
+FESTER SCHNELLZUGRIFF (3.2)
+Schreibtisch, Downloads, Dokumente und Papierkorb stehen immer zuerst im
+Schnellzugriff beider Seiten. Bestehende eigene Favoriten bleiben dahinter erhalten.
+Die festen Einträge lassen sich nicht über den Stern entfernen. Der Papierkorb
+öffnet den macOS-Papierkorb im Finder, wo Dateien wiederhergestellt werden können.
+Der Eintrag ist kein normaler Zielordner für Branch-Übertragungen.
+
+SORTIEREN NACH ERSTELLUNGSDATUM UND DATEITYP (3.3)
+In der Detailansicht gibt es die Spalte „Erstellungsdatum“. Sie zeigt das vom
+Dateisystem gemeldete Erstellungsdatum, nicht ein Datum im Dokumentinhalt.
+Klick auf die Spaltenüberschrift sortiert, erneuter Klick kehrt die Richtung um.
+Auch unter Sortieren → Erstellungsdatum verfügbar; dort zunächst neueste zuerst.
+„Dateityp“ sortiert anhand der Dateiendung, unabhängig von Groß-/Kleinschreibung.
+Beide Kriterien funktionieren auf- und absteigend. Ordner stehen weiterhin vor
+Dateien. Fehlende Datumswerte werden als „—“ angezeigt und beim Sortieren wie
+sehr alte Werte behandelt. In schmalen Fenstern sind weitere Spalten durch
+horizontales Scrollen erreichbar. Eigenschaften zeigt das Erstellungsdatum ebenfalls.

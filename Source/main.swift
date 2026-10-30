@@ -199,7 +199,7 @@ final class BrowserPane: NSViewController, NSOutlineViewDataSource, NSOutlineVie
         outline.dataSource = self; outline.delegate = self; outline.autoresizesOutlineColumn = true
         outline.registerForDraggedTypes([.fileURL]); outline.setDraggingSourceOperationMask([.copy, .move], forLocal: true)
         let treeScroll = NSScrollView(); treeScroll.documentView = outline; treeScroll.hasVerticalScroller = true; treeScroll.hasHorizontalScroller = true; treeScroll.autohidesScrollers = true; treeScroll.backgroundColor = BranchStyle.sidebar
-        for (id, title, width) in [("name", "Name", 270.0), ("date", "Änderungsdatum", 145.0), ("type", "Typ", 100.0), ("size", "Größe", 85.0)] {
+        for (id, title, width) in [("name", "Name", 270.0), ("date", "Änderungsdatum", 145.0), ("created", "Erstellungsdatum", 145.0), ("type", "Dateityp", 110.0), ("size", "Größe", 85.0)] {
             let c = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(id)); c.title = title; c.width = width; c.minWidth = id == "name" ? 130 : 65
             c.sortDescriptorPrototype = NSSortDescriptor(key:id,ascending:true)
             table.addTableColumn(c)
@@ -232,13 +232,22 @@ final class BrowserPane: NSViewController, NSOutlineViewDataSource, NSOutlineVie
         rebuildTree(); navigate(isFolder(current) ? current : fm.homeDirectoryForCurrentUser, remember: false); renderTabs(); let mode = NSMenuItem(); mode.tag = settings.integer(forKey:identifierKey + ".view"); chooseView(mode)
     }
     override func viewDidAppear() { super.viewDidAppear(); innerSplit.setPosition(190, ofDividerAt: 0) }
+    static var fixedQuickAccess: [(name:String,url:URL)] {
+        let home = fm.homeDirectoryForCurrentUser
+        return [("Schreibtisch","Desktop"),("Downloads","Downloads"),("Dokumente","Documents"),("Papierkorb",".Trash")].map { (name:$0.0,url:home.appendingPathComponent($0.1)) }
+    }
+    static func mergedFavorites(_ saved: [String]) -> [String] {
+        var seen = Set<String>()
+        return (fixedQuickAccess.map { $0.url.path } + saved).filter { seen.insert(URL(fileURLWithPath:$0).standardizedFileURL.path).inserted }
+    }
+    static func isTrashShortcut(_ url: URL) -> Bool { url.standardizedFileURL.path == fm.homeDirectoryForCurrentUser.appendingPathComponent(".Trash").path }
     var favorites: [String] {
-        get { settings.stringArray(forKey: "favorites") ?? ["Desktop","Downloads","Documents","Pictures","Music","Movies"].map { fm.homeDirectoryForCurrentUser.appendingPathComponent($0).path } }
-        set { settings.set(newValue, forKey: "favorites"); NotificationCenter.default.post(name: favoritesChanged, object: nil) }
+        get { Self.mergedFavorites(settings.stringArray(forKey:"favorites") ?? []) }
+        set { settings.set(Self.mergedFavorites(newValue),forKey:"favorites"); NotificationCenter.default.post(name:favoritesChanged,object:nil) }
     }
     @objc func rebuildTree() {
         let expanded = (0..<outline.numberOfRows).compactMap { outline.item(atRow: $0) as? TreeNode }.filter { outline.isItemExpanded($0) }.compactMap { $0.url?.path }
-        roots = [TreeNode(nil, title: "SCHNELLZUGRIFF", children: favorites.map { TreeNode(URL(fileURLWithPath: $0)) }), TreeNode(nil, title: "DIESER MAC", children: [TreeNode(fm.homeDirectoryForCurrentUser, title: "Benutzerordner"), TreeNode(URL(fileURLWithPath: "/"), title: "Macintosh HD"), TreeNode(URL(fileURLWithPath: "/Volumes"), title: "Laufwerke")])]
+        roots = [TreeNode(nil, title: "SCHNELLZUGRIFF", children: favorites.map { path in TreeNode(URL(fileURLWithPath:path),title:Self.fixedQuickAccess.first { $0.url.path == path }?.name) }), TreeNode(nil, title: "DIESER MAC", children: [TreeNode(fm.homeDirectoryForCurrentUser, title: "Benutzerordner"), TreeNode(URL(fileURLWithPath: "/"), title: "Macintosh HD"), TreeNode(URL(fileURLWithPath: "/Volumes"), title: "Laufwerke")])]
         syncing = true; outline.reloadData()
         for root in roots { outline.expandItem(root) }
         if expanded.isEmpty, let home = roots.last?.children().first { outline.expandItem(home) }
@@ -249,12 +258,17 @@ final class BrowserPane: NSViewController, NSOutlineViewDataSource, NSOutlineVie
         }
         syncing = false; updateStar(); syncTree()
     }
-    func updateStar() { favorite.image = BranchStyle.symbol(favorites.contains(current.path) ? "star.fill" : "star", color: BranchStyle.gold) }
+    func updateStar() {
+        let fixed = Self.fixedQuickAccess.contains { $0.url.path == current.path }
+        favorite.image = BranchStyle.symbol(favorites.contains(current.path) ? "star.fill" : "star",color:BranchStyle.gold)
+        favorite.isEnabled = !fixed
+        favorite.toolTip = fixed ? "Dieser Ordner gehört dauerhaft zum Schnellzugriff" : "Zum Schnellzugriff hinzufügen oder daraus entfernen"
+    }
     func navigate(_ url: URL, remember: Bool = true) {
         guard isFolder(url) else { failure("Dieser Ordner ist nicht erreichbar: \(url.path)"); return }
         do {
             let options: FileManager.DirectoryEnumerationOptions = settings.bool(forKey: "hidden") ? [] : [.skipsHiddenFiles]
-            let contents = try fm.contentsOfDirectory(at: url, includingPropertiesForKeys: [.isDirectoryKey, .isPackageKey, .fileSizeKey, .contentModificationDateKey], options: options)
+            let contents = try fm.contentsOfDirectory(at: url, includingPropertiesForKeys: [.isDirectoryKey, .isPackageKey, .fileSizeKey, .contentModificationDateKey, .creationDateKey], options: options)
             if remember && current != url { history.append(current); forwardHistory.removeAll() }
             searchToken?.request(); recursiveResults = nil
             current = url.standardizedFileURL; files = contents.sorted { a, b in
@@ -294,7 +308,7 @@ final class BrowserPane: NSViewController, NSOutlineViewDataSource, NSOutlineVie
     @objc func goPath() { navigate(URL(fileURLWithPath: (path.stringValue as NSString).expandingTildeInPath)); view.window?.makeFirstResponder(table) }
     @objc func chooseFolder() { let p = NSOpenPanel(); p.canChooseDirectories = true; p.canChooseFiles = false; p.directoryURL = current; if p.runModal() == .OK, let url = p.url { navigate(url) } }
     @objc func refreshAll() { guard !busy else { return }; let query = search.stringValue; rebuildTree(); navigate(current, remember: false); search.stringValue = query; filter() }
-    @objc func toggleFavorite() { var f = favorites; if f.contains(current.path) { f.removeAll { $0 == current.path } } else { f.append(current.path) }; favorites = f }
+    @objc func toggleFavorite() { guard !Self.fixedQuickAccess.contains(where:{ $0.url.path == current.path }) else { return }; var f = favorites; if f.contains(current.path) { f.removeAll { $0 == current.path } } else { f.append(current.path) }; favorites = f }
     var selected: [URL] { table.selectedRowIndexes.compactMap { $0 < visibleFiles.count ? visibleFiles[$0] : nil } }
     @objc func favoriteSelected() { var f = favorites; for u in selected where isFolder(u) && !f.contains(u.path) { f.append(u.path) }; favorites = f }
     @objc func openSelected() { for u in selected { if isFolder(u) { navigate(u); break } else { NSWorkspace.shared.open(u) } } }
@@ -336,7 +350,7 @@ final class BrowserPane: NSViewController, NSOutlineViewDataSource, NSOutlineVie
     func transfer(_ urls: [URL], to target: URL, copy: Bool) { TransferCenter.shared.start(urls, to: target, copy: copy) }
     func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int { (item as? TreeNode)?.children().count ?? roots.count }
     func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any { (item as? TreeNode)?.children()[index] ?? roots[index] }
-    func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool { let n = item as! TreeNode; return n.url != nil || !n.children().isEmpty }
+    func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool { let n = item as! TreeNode; if let url = n.url, Self.isTrashShortcut(url) { return false }; return n.url != nil || !n.children().isEmpty }
     func outlineView(_ outlineView: NSOutlineView, isGroupItem item: Any) -> Bool { (item as! TreeNode).url == nil }
     func outlineView(_ outlineView: NSOutlineView, shouldSelectItem item: Any) -> Bool { (item as! TreeNode).url != nil }
     func cell(_ title: String, image: NSImage? = nil, secondary: Bool = false, tint: NSColor? = nil) -> NSView {
@@ -352,6 +366,11 @@ final class BrowserPane: NSViewController, NSOutlineViewDataSource, NSOutlineVie
     func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
         let n = item as! TreeNode
         if let url = n.url {
+            if Self.isTrashShortcut(url) {
+                let c = cell("Papierkorb",image:BranchStyle.symbol("trash",color:BranchStyle.muted))
+                c.toolTip = "macOS-Papierkorb öffnen – dort kannst du Dateien wiederherstellen"
+                return c
+            }
             let starred = favorites.contains(url.path)
             let symbol = url.path == "/" || url.path == "/Volumes" ? "externaldrive.fill" : (url == fm.homeDirectoryForCurrentUser ? "house.fill" : "folder.fill")
             return cell(n.title, image: BranchStyle.symbol(symbol, color: symbol == "folder.fill" || starred ? BranchStyle.gold : BranchStyle.muted))
@@ -361,13 +380,21 @@ final class BrowserPane: NSViewController, NSOutlineViewDataSource, NSOutlineVie
         c.textField?.textColor = BranchStyle.muted
         return c
     }
-    func outlineViewSelectionDidChange(_ notification: Notification) { guard !syncing, let node = outline.item(atRow: outline.selectedRow) as? TreeNode, let url = node.url else { return }; navigate(url) }
+    func outlineViewSelectionDidChange(_ notification: Notification) { guard !syncing, let node = outline.item(atRow: outline.selectedRow) as? TreeNode, let url = node.url else { return }
+        if Self.isTrashShortcut(url) {
+            syncTree()
+            if !NSWorkspace.shared.open(url) { failure("Der macOS-Papierkorb konnte nicht geöffnet werden.") }
+            return
+        }
+        navigate(url)
+    }
     func numberOfRows(in tableView: NSTableView) -> Int { visibleFiles.count }
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        let u = visibleFiles[row]; let v = try? u.resourceValues(forKeys: [.fileSizeKey, .contentModificationDateKey])
+        let u = visibleFiles[row]; let v = try? u.resourceValues(forKeys: [.fileSizeKey, .contentModificationDateKey, .creationDateKey])
         switch tableColumn?.identifier.rawValue {
         case "type": return cell(isFolder(u) ? "Dateiordner" : (u.pathExtension.isEmpty ? "Datei" : u.pathExtension.uppercased() + "-Datei"),secondary:true)
         case "size": return cell(isFolder(u) ? "—" : ByteCountFormatter.string(fromByteCount: Int64(v?.fileSize ?? 0), countStyle: .file), secondary: true)
+        case "created": return cell(v?.creationDate.map { DateFormatter.localizedString(from:$0,dateStyle:.short,timeStyle:.short) } ?? "—", secondary:true)
         case "date": return cell(v?.contentModificationDate.map { DateFormatter.localizedString(from: $0, dateStyle: .short, timeStyle: .short) } ?? "—", secondary: true)
         default: return cell(label(u), image: isFolder(u) ? BranchStyle.folderIcon() : NSWorkspace.shared.icon(forFile: u.path), tint: isFolder(u) ? BranchStyle.gold : nil)
         }
@@ -385,7 +412,7 @@ final class BrowserPane: NSViewController, NSOutlineViewDataSource, NSOutlineVie
         return dragOperation(info)
     }
     func tableView(_ tableView: NSTableView, acceptDrop info: NSDraggingInfo, row: Int, dropOperation: NSTableView.DropOperation) -> Bool { let target = row >= 0 && row < visibleFiles.count && isFolder(visibleFiles[row]) ? visibleFiles[row] : current; transfer(readURLs(info.draggingPasteboard), to: target, copy: dragOperation(info) == .copy); return true }
-    func outlineView(_ outlineView: NSOutlineView, validateDrop info: NSDraggingInfo, proposedItem item: Any?, proposedChildIndex index: Int) -> NSDragOperation { guard !busy, let n = item as? TreeNode, n.url != nil, !readURLs(info.draggingPasteboard).isEmpty else { return [] }; outlineView.setDropItem(item, dropChildIndex: NSOutlineViewDropOnItemIndex); return dragOperation(info) }
+    func outlineView(_ outlineView: NSOutlineView, validateDrop info: NSDraggingInfo, proposedItem item: Any?, proposedChildIndex index: Int) -> NSDragOperation { guard !busy, let n = item as? TreeNode, let target = n.url, !Self.isTrashShortcut(target), !readURLs(info.draggingPasteboard).isEmpty else { return [] }; outlineView.setDropItem(item, dropChildIndex: NSOutlineViewDropOnItemIndex); return dragOperation(info) }
     func outlineView(_ outlineView: NSOutlineView, acceptDrop info: NSDraggingInfo, item: Any?, childIndex index: Int) -> Bool { guard let url = (item as? TreeNode)?.url else { return false }; transfer(readURLs(info.draggingPasteboard), to: url, copy: dragOperation(info) == .copy); return true }
 }
 final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {

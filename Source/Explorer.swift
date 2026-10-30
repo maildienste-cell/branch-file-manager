@@ -12,6 +12,9 @@ final class ExplorerClipboard {
     func consumeCut() { cutChangeCount = nil }
 }
 extension BrowserPane {
+    static let explorerSortFields: [(key:String,title:String)] = [
+        ("name","Name"),("date","Änderungsdatum"),("created","Erstellungsdatum"),("type","Dateityp"),("size","Größe")
+    ]
     func explorerCommands() -> NSStackView {
         let create = NSPopUpButton(frame:.zero,pullsDown:true); create.addItem(withTitle:"Neu")
         for (title,action) in [("Ordner",#selector(newFolder)),("Textdokument",#selector(newTextDocument))] {
@@ -24,7 +27,7 @@ extension BrowserPane {
         let share = button("square.and.arrow.up","Teilen",#selector(shareSelected))
         let trash = button("trash","In den Papierkorb (Entf)",#selector(trashSelected))
         let sort = NSPopUpButton(frame:.zero,pullsDown:true); sort.addItem(withTitle:"Sortieren")
-        for (i,name) in ["Name","Änderungsdatum","Typ","Größe"].enumerated() {
+        for (i,name) in Self.explorerSortFields.map(\.title).enumerated() {
             let item = NSMenuItem(title:name,action:#selector(chooseSort(_:)),keyEquivalent:""); item.tag = i; item.target = self; sort.menu?.addItem(item)
         }
         sort.menu?.addItem(.separator())
@@ -69,7 +72,7 @@ extension BrowserPane {
         for item in menu.items {
             if item.action == #selector(chooseSort(_:)) {
                 let descriptor = table.sortDescriptors.first
-                let active = item.tag >= 10 ? (descriptor?.ascending ?? true) == (item.tag == 10) : ["name","date","type","size"][item.tag] == (descriptor?.key ?? "name")
+                let active = item.tag >= 10 ? (descriptor?.ascending ?? true) == (item.tag == 10) : Self.explorerSortFields[item.tag].key == (descriptor?.key ?? "name")
                 item.state = active ? .on : .off
             } else if item.action == #selector(chooseView(_:)) { item.state = settings.integer(forKey:identifierKey + ".view") == item.tag ? .on : .off }
         }
@@ -80,7 +83,8 @@ extension BrowserPane {
         let alert = NSAlert(); alert.messageText = url.lastPathComponent
         let size = isFolder(url) ? "Ordner" : ByteCountFormatter.string(fromByteCount:Int64(values?.fileSize ?? 0),countStyle:.file)
         let modified = values?.contentModificationDate.map { DateFormatter.localizedString(from:$0,dateStyle:.medium,timeStyle:.short) } ?? "—"
-        alert.informativeText = "Pfad: \(url.path)\n\nGröße/Typ: \(size)\nGeändert: \(modified)"
+        let created = values?.creationDate.map { DateFormatter.localizedString(from:$0,dateStyle:.medium,timeStyle:.short) } ?? "—"
+        alert.informativeText = "Pfad: \(url.path)\n\nGröße/Typ: \(size)\nGeändert: \(modified)\nErstellt: \(created)"
         alert.addButton(withTitle:"Schließen"); alert.runModal()
     }
     @objc func shareSelected() {
@@ -97,13 +101,13 @@ extension BrowserPane {
     @objc func breadcrumbClicked() { if let url = address.clickedPathItem?.url { navigate(url) } }
     @objc func goForward() { if let next = forwardHistory.popLast() { history.append(current); navigate(next,remember:false) } }
     @objc func chooseSort(_ sender: NSMenuItem) {
-        let keys = ["name","date","type","size"]
+        let keys = Self.explorerSortFields.map(\.key)
         if sender.tag >= 10 {
             table.sortDescriptors = [NSSortDescriptor(key:table.sortDescriptors.first?.key ?? "name",ascending:sender.tag == 10)]; return
         }
         guard keys.indices.contains(sender.tag) else { return }
         let key = keys[sender.tag]
-        let ascending = table.sortDescriptors.first?.key == key ? !(table.sortDescriptors.first?.ascending ?? true) : key != "date"
+        let ascending = table.sortDescriptors.first?.key == key ? !(table.sortDescriptors.first?.ascending ?? true) : key != "date" && key != "created"
         table.sortDescriptors = [NSSortDescriptor(key:key,ascending:ascending)]
     }
     @objc func chooseView(_ sender: NSMenuItem) {
@@ -116,7 +120,7 @@ extension BrowserPane {
     func sortExplorerFiles(_ values: [URL]) -> [URL] {
         let descriptor = table.sortDescriptors.first, key = descriptor?.key ?? "name", ascending = descriptor?.ascending ?? true
         // Read metadata once per item, not for every comparison.
-        let metadata = Dictionary(uniqueKeysWithValues: values.map { ($0,(try? $0.resourceValues(forKeys:[.fileSizeKey,.contentModificationDateKey]))) })
+        let metadata = Dictionary(uniqueKeysWithValues: values.map { ($0,(try? $0.resourceValues(forKeys:[.fileSizeKey,.contentModificationDateKey,.creationDateKey]))) })
         return values.sorted { a,b in
             let aFolder = isFolder(a), bFolder = isFolder(b)
             if aFolder != bFolder { return aFolder }
@@ -124,7 +128,8 @@ extension BrowserPane {
             switch key {
             case "size": let x = metadata[a]??.fileSize ?? 0, y = metadata[b]??.fileSize ?? 0; order = x == y ? .orderedSame : x < y ? .orderedAscending : .orderedDescending
             case "date": order = (metadata[a]??.contentModificationDate ?? .distantPast).compare(metadata[b]??.contentModificationDate ?? .distantPast)
-            case "type": order = a.pathExtension.localizedStandardCompare(b.pathExtension)
+            case "created": order = (metadata[a]??.creationDate ?? .distantPast).compare(metadata[b]??.creationDate ?? .distantPast)
+            case "type": order = a.pathExtension.lowercased().localizedStandardCompare(b.pathExtension.lowercased())
             default: order = label(a).localizedStandardCompare(label(b))
             }
             if order == .orderedSame { order = label(a).localizedStandardCompare(label(b)) }
