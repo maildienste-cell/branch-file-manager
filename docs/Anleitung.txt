@@ -1,4 +1,4 @@
-Branch – Version 3.3
+Branch – Version 3.5
 Dateiverwaltung für deinen Mac mit Apple-Chip, ab macOS 14.
 
 EXPLORER-DESIGN UND BEDIENUNG
@@ -83,18 +83,19 @@ die gemessene Datenrate. Beim Verschieben innerhalb desselben Laufwerks erschein
 Klicke auf Botti oder drücke ⌘J, um den Datei-Chat zu öffnen.
 Beispiele: „Zeige meine größten PDFs“, „Wie viele Bilder liegen hier?“ oder
 „Finde PDF-Dateien mit Rechnung im Namen“.
-Wähle oben den aktuellen Ordner, den Benutzerordner oder einen eigenen Suchordner.
-Die Suche berücksichtigt Unterordner und filtert Namen, Typ, Änderungsdatum und
-Größe. Treffer lassen sich in Branch anzeigen oder per Vorschau öffnen.
+Ein markierter Ordner hat Vorrang; sonst gilt der geöffnete Ordner der aktiven Seite.
+Die Suche filtert Namen, Typ, Änderungsdatum und Größe. Unterordner werden nur
+auf ausdrücklichen Wunsch durchsucht. Treffer erscheinen direkt in der Dateiansicht.
 Die lokale Apple-KI benötigt macOS 26 und ein verfügbares Apple-Intelligence-Modell.
 Ohne verfügbare KI bleibt eine einfache lokale Stichwortsuche nutzbar.
 Dateien werden nicht an einen KI-Server hochgeladen; der Chat wird nicht gespeichert.
 
-Für Inhaltsfragen zuerst eine Datei markieren und „Auswahl zusammenfassen“ wählen.
+Für Inhaltsfragen zuerst eine Datei markieren und über das Regler-Symbol
+„Ausgewählte Datei befragen“ wählen oder nach einer Zusammenfassung fragen.
 Unterstützt sind PDFs mit Text sowie einfache Textdateien (z. B. TXT, Markdown,
 CSV oder JSON), bis 25 MB. Verarbeitet wird nur ein Auszug: höchstens die ersten
 8 PDF-Seiten bzw. 8.000 Zeichen. Word-Dateien und Bildscans werden nicht ausgelesen.
-Die KI kann sich irren; die jeweilige Quelldatei wird in der Antwort angegeben.
+Die KI kann sich irren; die jeweilige Quelldatei steht unter „Details“.
 Die Dateisuche liest nur Metadaten, keine gesamten Dokumentinhalte.
 
 Pro Suche gelten maximal 100.000 untersuchte Einträge bzw. 12 Sekunden; angezeigt
@@ -253,3 +254,64 @@ Beide Kriterien funktionieren auf- und absteigend. Ordner stehen weiterhin vor
 Dateien. Fehlende Datumswerte werden als „—“ angezeigt und beim Sortieren wie
 sehr alte Werte behandelt. In schmalen Fenstern sind weitere Spalten durch
 horizontales Scrollen erreichbar. Eigenschaften zeigt das Erstellungsdatum ebenfalls.
+
+LOKALE MODELLAUSWAHL (3.4)
+Im Botti-Bereich kannst du zwischen Qwen 3.5 · 4B (Ollama), Apple Intelligence
+und Stichwortsuche ohne KI wechseln. Die Wahl wird gespeichert. Die Statuszeile
+zeigt, ob Ollama erreichbar und das Modell installiert ist. „Ollama öffnen“
+startet die vorhandene Ollama-App. Bei fehlendem Modell einmal im Terminal:
+ollama pull qwen3.5:4b
+Der Modelldownload benötigt Internet und mehrere GB Speicher. Danach läuft
+Bottis Qwen-Verarbeitung lokal über 127.0.0.1:11434. Keine Cloud-Modelle,
+keine automatischen Modellwechsel und keine Weiterleitungen auf andere Server.
+Der Modellname ist fest auf qwen3.5:4b eingestellt. Ollama muss dafür laufen.
+Nach fünf Minuten ohne Nutzung kann Ollama den Modellspeicher freigeben.
+Der erste Aufruf nach dem Entladen dauert länger. Anfragen enden nach spätestens
+120 Sekunden; „Stoppen“ bricht das Warten und die laufende Anfrage ab.
+
+REALISTISCHE SZENARIEN
+• „Dateien finden“: z. B. „Zeige die größten PDFs mit Rechnung im Namen“,
+  „Wie viele Bilder habe ich letzte Woche geändert?“, „PDFs größer als 20 MB“.
+  Das Modell übersetzt die Frage; Branch prüft Dateien und zählt die Treffer.
+  Die tatsächlich verwendeten Filter erscheinen in der Antwort.
+• „Ausgewählte Datei befragen“: eine Datei markieren, dann z. B. „Wann ist der
+  Termin?“ oder „Welche Aufgaben stehen darin?“ Quellenpfad und Auszugslimit
+  werden angezeigt. Für Zusammenfassungen gibt es weiterhin einen Knopf.
+• Unterstützt werden Text-PDFs und die aufgelisteten Textformate, keine direkte
+  Inhaltsauswertung von Word-, Excel- oder Pages-Dateien. Keine OCR für Scans.
+• Es gibt keinen vollständigen Inhaltsindex und keine semantische Suche über
+  alle Dokumente. Der Suchmodus durchsucht Dateinamen und Metadaten.
+• Antworten beziehen sich auf maximal 8 PDF-Seiten bzw. 8.000 Textzeichen.
+  Informationen außerhalb des Auszugs können fehlen. Antworten nachprüfen.
+• Keine selbständigen Dateiänderungen durch das Modell, keine Shell-Befehle.
+  Der normale Datei-Chat speichert keinen dauerhaften Gesprächsverlauf.
+• Qwen ist optional und nicht im App-ZIP enthalten. Modell und Ollama unterliegen
+  ihren eigenen Lizenzen; der Lizenzstatus von Branch bleibt unverändert.
+
+BOTTI DIREKT IN BRANCH (3.5)
+Botti öffnet sich mit Klick auf die Figur oder ⌘J direkt unter der Dateiansicht.
+Das große, helle Eingabefeld nimmt mehrere Zeilen auf. Senden oder ⌘Enter startet
+die Anfrage; Enter allein erzeugt eine neue Zeile. Einstellungen (Regler-Symbol)
+und Details sind bei Bedarf erreichbar. Es gibt keine separate Trefferliste mehr.
+
+„Markiere die größten 3 Dateien hier im Ordner mit der Farbe blau“ wählt genau
+die drei größten direkten Dateien aus. Ein einzeln markierter Ordner wird als
+Suchbereich verwendet; sonst gilt der geöffnete Ordner der aktiven Seite.
+Unterordner werden nur auf ausdrücklichen Wunsch durchsucht. Treffer erscheinen
+in der normalen Dateiansicht und können dort geöffnet, kopiert oder verschoben
+werden. Blau ist die Auswahl, kein dauerhaftes Finder-Farb-Tag. Bei Suchlimits
+oder unlesbaren Bereichen wird die Einschränkung weiterhin kurz angezeigt.
+Ergebnisse über mehrere Unterordner erscheinen in derselben Dateiansicht;
+F5 stellt die normale Ordneransicht wieder her. Die rechte Seite bleibt beim
+Wechsel ins Botti-Eingabefeld als Ziel erhalten. Botti lässt sich mit × schließen;
+bei sehr niedrigen Fensterlayouts wird der Bereich automatisch eingeklappt.
+
+SPRACHEINGABE
+Der Mikrofonknopf startet deutsche Spracherkennung. macOS fragt beim ersten
+Mal nach Mikrofon- und Spracherkennungszugriff. Es wird nur lokale Erkennung
+verwendet; falls diese nicht verfügbar ist, erscheint ein Hinweis. Kein Cloud-
+Ausweichdienst. Erneuter Klick stoppt die Aufnahme, spätestens nach 55 Sekunden
+endet sie automatisch. Der erkannte Text steht zur Korrektur im Eingabefeld.
+Erst Senden führt eine Anfrage aus. Schließen oder Senden beendet die Aufnahme.
+Die Verfügbarkeit der deutschen Offline-Erkennung wurde auf diesem Mac geprüft;
+eine echte Mikrofonaufnahme mit erteilten Berechtigungen wurde nicht getestet.

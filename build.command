@@ -20,7 +20,7 @@ xcrun swiftc -target arm64-apple-macos14.0 \
   Source/Desktop.swift Source/Explorer.swift Source/Tests.swift Source/Robot.swift \
   Source/TransferSpeed.swift Source/FileSearch.swift Source/FileChat.swift \
   -o "$app_path/Contents/MacOS/Branch" \
-  -framework AppKit -framework Quartz -framework PDFKit \
+  -framework AppKit -framework Quartz -framework PDFKit -framework Speech -framework AVFoundation \
   -Xlinker -weak_framework -Xlinker FoundationModels
 xattr -cr "$app_path"
 codesign --force --sign - "$app_path"

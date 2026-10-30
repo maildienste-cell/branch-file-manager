@@ -82,7 +82,11 @@ extension BrowserPane {
 }
 extension AppDelegate {
     var activePane: BrowserPane {
-        if !split.splitViewItems[1].isCollapsed, let responder = window.firstResponder as? NSView, responder.isDescendant(of: right.view) { return right }
+        if let responder = window.firstResponder as? NSView {
+            if !split.splitViewItems[1].isCollapsed, responder.isDescendant(of:right.view) { lastActivePane = right; return right }
+            if responder.isDescendant(of:left.view) { lastActivePane = left; return left }
+        }
+        if lastActivePane === right && !split.splitViewItems[1].isCollapsed { return right }
         return left
     }
     @objc func addActiveTab() { activePane.newTab() }

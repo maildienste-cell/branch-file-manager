@@ -59,6 +59,7 @@ extension AppDelegate {
         windowDidResize(Notification(name:NSWindow.didResizeNotification,object:window))
     }
     func windowDidResize(_ notification: Notification) {
+        if window.frame.height < 650, fileChat.isPresented { fileChat.hide() }
         robot.isHidden = false
         robotHeight?.constant = 92
         robot.needsDisplay = true

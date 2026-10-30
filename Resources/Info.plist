@@ -15,9 +15,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>3.3</string>
+	<string>3.5</string>
 	<key>CFBundleVersion</key>
-	<string>15</string>
+	<string>17</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>14.0</string>
 	<key>NSDesktopFolderUsageDescription</key>
@@ -28,5 +28,9 @@
 	<string>Branch zeigt und verwaltet deine Downloads.</string>
 	<key>NSHighResolutionCapable</key>
 	<true/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Botti schreibt deine gesprochenen Fragen in das Eingabefeld. Die Aufnahme startet nur per Mikrofon-Knopf.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Botti nutzt deutsche Spracherkennung lokal auf deinem Mac, um diktierte Fragen in Text umzuwandeln.</string>
 </dict>
 </plist>

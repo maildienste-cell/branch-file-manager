@@ -14,8 +14,9 @@ ZIP entpacken und **Branch.app** in den Programme-Ordner ziehen.
   macOS kann den ersten Start blockieren. Prüfe die Herkunft; die Freigabe erfolgt gegebenenfalls
   unter **Systemeinstellungen → Datenschutz & Sicherheit → Dennoch öffnen**.
 - Kein Installer, kein Administratorzugriff zum normalen Betrieb und kein Cloud-Konto nötig.
-- Die lokale KI setzt macOS 26 und ein auf dem Gerät verfügbares Apple-Intelligence-Modell voraus.
-  Ohne dieses Modell bleibt die einfache lokale Dateisuche verfügbar.
+- Für Qwen 3.5 · 4B werden Ollama und das separat heruntergeladene Modell benötigt.
+  Apple Intelligence ist eine Alternative ab macOS 26 mit verfügbarem Systemmodell.
+  Ohne KI bleibt die einfache lokale Dateisuche verfügbar.
 
 ## Funktionen
 
@@ -32,7 +33,10 @@ ZIP entpacken und **Branch.app** in den Programme-Ordner ziehen.
 - Fensterpositionen für Bildschirmhälften und den nutzbaren ganzen Bildschirm.
 - Sicheres Auswerfen externer lokaler Laufwerke über macOS, ohne erzwungenes Trennen.
 - Botti zeigt Gesamtfortschritt, Dateizähler, Geschwindigkeit und geschätzte Restzeit.
-- Optionaler lokaler Datei-Chat mit Metadatensuche und Zusammenfassung ausgewählter Text-/PDF-Auszüge.
+- Botti direkt in der App: großes helles Eingabefeld, kurze Antworten und Ergebnisse in der Dateiansicht.
+- Lokale KI mit Qwen 3.5 · 4B über Ollama oder Apple Intelligence; Fragen zu ausgewählten Text-/PDF-Auszügen.
+- Gewünschte Trefferzahl direkt auswählen, z. B. die drei größten Dateien; ein markierter Ordner hat Vorrang.
+- Deutsche Offline-Spracheingabe mit Mikrofonknopf; erkannten Text vor dem Senden prüfen.
 
 ## Grenzen und Verhalten
 
@@ -51,6 +55,34 @@ Die App sendet selbst keine Dateien an einen KI-Server und speichert den Chat ni
 Ein vom Benutzer aufgerufener macOS-Freigabedienst oder Cloud-Dateianbieter kann eigene Netzwerkzugriffe ausführen.
 
 Details: [Anleitung](docs/Anleitung.txt) · [Explorer-Funktionsabgleich (Stand 3.1)](docs/Explorer-Abgleich.txt)
+
+## Botti einrichten
+
+Botti mit einem Klick auf die Figur oder **⌘J** öffnen. Das Regler-Symbol zeigt
+Modellauswahl und Einstellungen. Für Qwen zuerst [Ollama](https://ollama.com) installieren,
+starten und das Modell herunterladen:
+
+```sh
+ollama pull qwen3.5:4b
+```
+
+Danach **Qwen 3.5 · 4B** in Botti auswählen. Die App verbindet sich ausschließlich mit
+`127.0.0.1:11434`; Modellgewichte sind nicht im App-Download enthalten. Ollama und
+Modell haben eigene Lizenzen. Die Grundeinstellung bleibt Apple Intelligence.
+
+„Markiere die größten 3 Dateien hier im Ordner mit der Farbe blau“ wählt die
+Treffer direkt in Branch aus. Blau ist die Auswahl, kein dauerhafter Farb-Tag.
+Unterordner werden in Botti nur auf ausdrücklichen Wunsch durchsucht. Bei Ergebnissen
+über mehrere Unterordner stellt **F5** die normale Ordneransicht wieder her.
+
+Der Mikrofonknopf fragt beim ersten Einsatz nach Mikrofon- und Spracherkennungszugriff.
+Deutsche lokale Spracherkennung muss auf dem Mac verfügbar sein. Es gibt keinen
+Cloud-Ausweichdienst. Die Aufnahme endet spätestens nach 55 Sekunden; Senden bleibt
+manuell. Eine echte Mikrofonaufnahme mit erteilten Berechtigungen wurde noch nicht getestet.
+
+Keine semantische Volltextsuche über alle Dokumente, keine OCR und keine direkte
+Word-/Excel-Inhaltsauswertung. Dokumentantworten nutzen maximal acht PDF-Seiten bzw.
+8.000 Zeichen. Suchfilter und Einschränkungen stehen unter **Details**.
 
 ## Aus dem Quellcode bauen
 
@@ -77,7 +109,10 @@ build/Branch.app/Contents/MacOS/Branch --ai-test
 
 Der UI-Test verwendet isolierte App-Einstellungen, öffnet Testfenster und erzeugt einen Screenshot,
 der Benutzernamen/Ordnernamen zeigen kann. Solche Screenshots nicht ungeprüft veröffentlichen.
-Der KI-Test benötigt das verfügbare lokale Apple-Modell. Echte Laufwerke werden nicht ausgeworfen.
+Der KI-Test nutzt standardmäßig das verfügbare lokale Apple-Modell. Mit
+`--ai-test -ai.provider ollama` wird stattdessen Qwen geprüft.
+`--ui-test /tmp/branch-ui.png --botti-check -ai.provider ollama -ApplePersistenceIgnoreState YES`
+prüft die integrierte Auswahl anhand temporärer Beispieldateien. Echte Laufwerke werden nicht ausgeworfen.
 
 ## Entwicklung und Rückmeldungen
 

@@ -1,5 +1,22 @@
 # Änderungen
 
+## 3.5 – Botti direkt in Branch
+
+- Integrierter Botti-Bereich statt separatem Chat- und Ergebnisfenster.
+- Großes helles Eingabefeld; Einstellungen und ausführliche Suchdetails bei Bedarf.
+- Treffer direkt in der Dateiansicht auswählen, einschließlich gewünschter Trefferzahl.
+- Ausgewählter Ordner hat Vorrang; Unterordner nur auf ausdrücklichen Wunsch.
+- Aktive Seite bleibt beim Wechsel ins Eingabefeld erhalten.
+- Deutsche Offline-Spracheingabe; Text vor dem Senden bearbeitbar.
+- Integrationstest für die Auswahl der drei größten direkten Dateien.
+
+## 3.4 – Qwen als lokale KI
+
+- Qwen 3.5 · 4B über die lokale Ollama-Schnittstelle.
+- Umschalten zwischen Qwen, Apple Intelligence und Stichwortsuche ohne KI.
+- Fragen zu ausgewählten Text-/PDF-Auszügen, Modellstatus und begrenzte Anfragen.
+- Modellinstallation separat; keine Cloud-Modelle oder automatischen Serverweiterleitungen.
+
 ## 3.3 – Erstellungsdatum und Dateityp
 
 - Neue Detailspalte und Sortierung nach dem Erstellungsdatum der Datei.

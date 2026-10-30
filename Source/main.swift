@@ -16,7 +16,7 @@ enum BranchStyle {
     static let gold = adaptive(rgb(221,163,32),rgb(245,196,83))
     static let text = NSColor.labelColor
     static let muted = NSColor.secondaryLabelColor
-    static let selected = adaptive(rgb(229,241,251),rgb(51,63,76))
+    static let selected = adaptive(rgb(187,219,255),rgb(27,75,125))
     static func symbol(_ name: String, color: NSColor) -> NSImage? {
         guard let source = NSImage(systemSymbolName: name, accessibilityDescription: nil) else { return nil }
         let image = source.withSymbolConfiguration(NSImage.SymbolConfiguration(paletteColors:[color])) ?? source
@@ -77,6 +77,10 @@ final class TreeNode {
 }
 final class FileTable: NSTableView {
     weak var pane: BrowserPane?
+    override func becomeFirstResponder() -> Bool {
+        if let pane, let app = NSApp.delegate as? AppDelegate { app.lastActivePane = pane; app.fileChat.selectionChanged(in:pane) }
+        return super.becomeFirstResponder()
+    }
     @objc func undo(_ sender: Any?) { TransferCenter.shared.undoLast() }
     @objc func newTab(_ sender: Any?) { pane?.newTab() }
     @objc func closeTab(_ sender: Any?) { if let pane { pane.closeTab(at: pane.activeTab) } }
@@ -313,7 +317,10 @@ final class BrowserPane: NSViewController, NSOutlineViewDataSource, NSOutlineVie
     @objc func favoriteSelected() { var f = favorites; for u in selected where isFolder(u) && !f.contains(u.path) { f.append(u.path) }; favorites = f }
     @objc func openSelected() { for u in selected { if isFolder(u) { navigate(u); break } else { NSWorkspace.shared.open(u) } } }
     @objc func previewSelected() { FilePreview.shared.toggle(selected.first,sourceTable:table) }
-    func tableViewSelectionDidChange(_ notification: Notification) { FilePreview.shared.update(selected.first,sourceTable:table) }
+    func tableViewSelectionDidChange(_ notification: Notification) {
+        FilePreview.shared.update(selected.first,sourceTable:table)
+        if let app = NSApp.delegate as? AppDelegate, app.lastActivePane === self { app.fileChat.selectionChanged(in:self) }
+    }
     @objc func newFolder() {
         guard !busy else { return }
         guard let name = input("Neuer Ordner", value: "Neuer Ordner") else { return }
@@ -381,12 +388,14 @@ final class BrowserPane: NSViewController, NSOutlineViewDataSource, NSOutlineVie
         return c
     }
     func outlineViewSelectionDidChange(_ notification: Notification) { guard !syncing, let node = outline.item(atRow: outline.selectedRow) as? TreeNode, let url = node.url else { return }
+        (NSApp.delegate as? AppDelegate)?.lastActivePane = self
         if Self.isTrashShortcut(url) {
             syncTree()
             if !NSWorkspace.shared.open(url) { failure("Der macOS-Papierkorb konnte nicht geöffnet werden.") }
             return
         }
         navigate(url)
+        (NSApp.delegate as? AppDelegate)?.fileChat.selectionChanged(in:self)
     }
     func numberOfRows(in tableView: NSTableView) -> Int { visibleFiles.count }
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
@@ -425,6 +434,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     var splitButton: NSButton!
     let robot = RobotView(frame: .zero)
     lazy var fileChat = FileChat(app: self)
+    weak var lastActivePane: BrowserPane?
     let workspaceButton = NSPopUpButton(frame: .zero, pullsDown: true)
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.appearance = testingUI && CommandLine.arguments.contains("--light-check") ? NSAppearance(named:.aqua) : (testingUI && CommandLine.arguments.contains("--dark-check") ? NSAppearance(named:.darkAqua) : nil)
@@ -465,9 +475,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         root.addChild(split)
         robot.onClick = { [weak self] in self?.fileChat.present() }
         let transferBar = TransferCenter.shared.bar
-        for v in [header, split.view, transferBar, robot] { v.translatesAutoresizingMaskIntoConstraints = false; root.view.addSubview(v) }
+        for v in [header, split.view, fileChat.view, transferBar, robot] { v.translatesAutoresizingMaskIntoConstraints = false; root.view.addSubview(v) }
         robotHeight = robot.heightAnchor.constraint(equalToConstant:92)
-        NSLayoutConstraint.activate([header.topAnchor.constraint(equalTo: root.view.topAnchor, constant: 16), header.leadingAnchor.constraint(equalTo: root.view.leadingAnchor, constant: 18), header.trailingAnchor.constraint(equalTo: root.view.trailingAnchor, constant: -18), split.view.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 14), split.view.leadingAnchor.constraint(equalTo: root.view.leadingAnchor), split.view.trailingAnchor.constraint(equalTo: root.view.trailingAnchor), split.view.bottomAnchor.constraint(equalTo: robot.topAnchor, constant: -6), transferBar.leadingAnchor.constraint(equalTo: root.view.leadingAnchor, constant: 14), transferBar.trailingAnchor.constraint(equalTo: robot.leadingAnchor, constant: -10), transferBar.centerYAnchor.constraint(equalTo: robot.centerYAnchor), robot.trailingAnchor.constraint(equalTo: root.view.trailingAnchor, constant: -10), robot.bottomAnchor.constraint(equalTo: root.view.bottomAnchor, constant: -6), robot.widthAnchor.constraint(equalToConstant: 310), robotHeight!])
+        NSLayoutConstraint.activate([header.topAnchor.constraint(equalTo: root.view.topAnchor, constant: 16), header.leadingAnchor.constraint(equalTo: root.view.leadingAnchor, constant: 18), header.trailingAnchor.constraint(equalTo: root.view.trailingAnchor, constant: -18), split.view.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 14), split.view.leadingAnchor.constraint(equalTo: root.view.leadingAnchor), split.view.trailingAnchor.constraint(equalTo: root.view.trailingAnchor), split.view.bottomAnchor.constraint(equalTo: fileChat.view.topAnchor, constant: -6), fileChat.view.leadingAnchor.constraint(equalTo:root.view.leadingAnchor,constant:10), fileChat.view.trailingAnchor.constraint(equalTo:root.view.trailingAnchor,constant:-10), fileChat.view.bottomAnchor.constraint(equalTo:robot.topAnchor,constant:-6), transferBar.leadingAnchor.constraint(equalTo: root.view.leadingAnchor, constant: 14), transferBar.trailingAnchor.constraint(equalTo: robot.leadingAnchor, constant: -10), transferBar.centerYAnchor.constraint(equalTo: robot.centerYAnchor), robot.trailingAnchor.constraint(equalTo: root.view.trailingAnchor, constant: -10), robot.bottomAnchor.constraint(equalTo: root.view.bottomAnchor, constant: -6), robot.widthAnchor.constraint(equalToConstant: 310), robotHeight!])
         window.contentViewController = root
         if !testingUI && !settings.bool(forKey:"explorerInterfaceInstalled") { settings.set(false,forKey:"dual"); settings.set(true,forKey:"explorerInterfaceInstalled") }
         let dual = settings.object(forKey: "dual") == nil || settings.bool(forKey: "dual")
@@ -511,6 +521,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
                     let item = NSMenuItem(); item.tag = WindowPlacement.left.rawValue; self.placeWindow(item)
                     self.window.contentView?.layoutSubtreeIfNeeded()
                 }
+                if CommandLine.arguments.contains("--chat-preview") {
+                    self.fileChat.present()
+                    self.window.contentView?.layoutSubtreeIfNeeded()
+                    let view = self.fileChat.view
+                    do {
+                        view.layoutSubtreeIfNeeded()
+                        if let bitmap = view.bitmapImageRepForCachingDisplay(in:view.bounds) {
+                            view.cacheDisplay(in:view.bounds,to:bitmap)
+                            try? bitmap.representation(using:.png,properties:[:])?.write(to:URL(fileURLWithPath:output + ".chat.png"))
+                        }
+                    }
+                }
                 if let view = self.window.contentView, let bitmap = view.bitmapImageRepForCachingDisplay(in: view.bounds) {
                     view.cacheDisplay(in: view.bounds, to: bitmap)
                     try? bitmap.representation(using: .png, properties: [:])?.write(to: URL(fileURLWithPath: output))
@@ -523,6 +545,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
                 }
                 if CommandLine.arguments.contains("--robot-check") {
                     self.fileChat.present(); print("ROBOT CHAT READY"); fflush(stdout); return
+                }
+                if CommandLine.arguments.contains("--botti-check") {
+                    Task { @MainActor in
+                        do { try await testBottiIntegration(self,output:output); NSApp.terminate(nil) }
+                        catch { print("BOTTI TEST FAILED: \(error)"); exit(1) }
+                    }
+                    return
                 }
                 NSApp.terminate(nil)
             }

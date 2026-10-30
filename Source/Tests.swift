@@ -1,6 +1,18 @@
 import AppKit
 
 func selfTest() throws {
+    for question in ["Markiere die größten 3 Dateien hier im Ordner mit der Farbe blau", "Markiere die drei größten Dateien"] {
+        let action = BottiSelectionRequest(question); precondition(action.limit == 3 && action.largest && !action.recursive)
+    }
+    precondition(BottiSelectionRequest("Finde PDFs größer als 20 MB").limit == nil)
+    precondition(BottiSelectionRequest("Finde Dateien ohne Unterordner").recursive == false)
+
+    let parsed = try OllamaFileAI.parse(#"{"terms":["Rechnung"],"kind":"pdf","days":-1,"minimumMB":-50,"order":"largest","intent":"find"}"#)
+    precondition(parsed.usedAI && parsed.kind == "pdf" && parsed.days == 0 && parsed.minimumBytes == 0)
+    for invalid in [#"{"terms":[],"kind":"shell","days":0,"minimumMB":0,"order":"name","intent":"find"}"#, "not JSON"] {
+        do { _ = try OllamaFileAI.parse(invalid); preconditionFailure("Invalid model response accepted") } catch { }
+    }
+
     let fixed = BrowserPane.fixedQuickAccess.map { $0.url.path }
     let custom = fm.homeDirectoryForCurrentUser.appendingPathComponent("CustomFavorite").path
     precondition(BrowserPane.mergedFavorites([]) == fixed)
@@ -272,11 +284,50 @@ func testRobotSearchAndSpeed() throws {
 }
 func testLocalAI() async throws {
     precondition(LocalFileAI.available, "Lokales Modell nicht verfügbar")
+    let start = Date()
     let q = await LocalFileAI.query("Zeige mir meine größten PDF-Dateien mit Rechnung im Namen.")
+    print("AI query seconds: \(Date().timeIntervalSince(start))")
     print("AI QUERY: kind=\(q.kind), terms=\(q.terms), order=\(q.order), localAI=\(q.usedAI)")
     precondition(q.usedAI && q.kind == "pdf" && q.order == "largest" && q.terms.contains(where:{$0.lowercased().contains("rechnung")}))
     let summary = try await LocalFileAI.summarize("Die Besprechung findet am Dienstag um 10 Uhr statt. Thema ist der neue Garten. Die Rechnung beträgt 250 Euro.",name:"Testnotiz.txt",question:"Wann findet die Besprechung statt?")
     print("AI SUMMARY: \(summary)")
     precondition(summary.lowercased().contains("dienstag") && summary.contains("10"))
-    print("PASS: local AI interprets German file query and answers from supplied text")
+    let count = await LocalFileAI.query("Wie viele Bilder habe ich letzte Woche geändert?")
+    precondition(count.usedAI && count.kind == "image" && count.days == 7 && count.intent == "count" && count.terms.isEmpty)
+    let size = await LocalFileAI.query("Finde PDFs größer als 20 MB.")
+    precondition(size.usedAI && size.kind == "pdf" && size.minimumBytes == 20_000_000 && size.terms.isEmpty)
+    print("PASS: local AI interprets German file queries and answers from supplied text")
+}
+
+@MainActor func testBottiIntegration(_ app: AppDelegate, output:String) async throws {
+    let root = fm.temporaryDirectory.resolvingSymlinksInPath().appendingPathComponent("Botti-Test-" + UUID().uuidString)
+    try fm.createDirectory(at:root,withIntermediateDirectories:true)
+    defer { try? fm.removeItem(at:root) }
+    let folder = root.appendingPathComponent("Testordner")
+    try fm.createDirectory(at:folder,withIntermediateDirectories:true)
+    let child = folder.appendingPathComponent("Unterordner")
+    try fm.createDirectory(at:child,withIntermediateDirectories:true)
+    for n in 1...4 { try Data(repeating:65,count:n*100).write(to:folder.appendingPathComponent("Datei-\(n).txt")) }
+    try Data(repeating:65,count:10000).write(to:child.appendingPathComponent("Nicht-direkt.txt"))
+    if app.split.splitViewItems[1].isCollapsed { app.toggleSplit() }
+    app.right.navigate(root)
+    guard let row = app.right.visibleFiles.firstIndex(where: { $0.resolvingSymlinksInPath().path == folder.resolvingSymlinksInPath().path }) else { throw transferError("Fixture missing: \(app.right.current.path); \(app.right.visibleFiles.map(\.path)); expected \(folder.path)") }
+    app.right.table.selectRowIndexes(IndexSet(integer:row),byExtendingSelection:false)
+    app.window.makeFirstResponder(app.right.table)
+    guard FileChat.searchRoot(app.right).resolvingSymlinksInPath().path == folder.resolvingSymlinksInPath().path else { throw transferError("Wrong search root") }
+    let windows = NSApp.windows.count
+    app.fileChat.present()
+    guard app.activePane === app.right && NSApp.windows.count == windows else { throw transferError("Wrong pane or extra window") }
+    await app.fileChat.testCommand("Markiere die größten 3 Dateien hier im Ordner mit der Farbe blau")
+    guard app.right.current.resolvingSymlinksInPath().path == folder.resolvingSymlinksInPath().path else { throw transferError("Wrong result folder: \(app.fileChat.testAnswer)") }
+    guard Set(app.right.selected.map(\.lastPathComponent)) == Set(["Datei-4.txt","Datei-3.txt","Datei-2.txt"]) else { throw transferError("Wrong selection: \(app.right.selected.map(\.lastPathComponent)); \(app.fileChat.testAnswer)") }
+    precondition(app.fileChat.testAnswer.contains("3 größte Dateien"))
+    let all = FileSearch.search(FileQuery(),root:folder,stop:StopRequest(),recursive:true)
+    precondition(all.count == 5)
+    app.window.contentView?.layoutSubtreeIfNeeded()
+    if let view = app.window.contentView, let bitmap = view.bitmapImageRepForCachingDisplay(in:view.bounds) {
+        view.cacheDisplay(in:view.bounds,to:bitmap)
+        try bitmap.representation(using:.png,properties:[:])?.write(to:URL(fileURLWithPath:output + ".botti.png"))
+    }
+    print("PASS BOTTI: selected folder; right pane retained; exactly 3 largest direct files selected; nested file excluded; no extra window")
 }
